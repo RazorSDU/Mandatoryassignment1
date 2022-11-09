@@ -8,43 +8,78 @@ namespace Mandatory_assignment_1_Tests
     public class TestFootballPlayer
     {
 
-        //[ClassInitialize]
-        //public static void Setup(TestContext context)
-        //{
-
-        //}
-
-        //[ClassCleanup]
-        //public static void TearDown()
-        //{
-
-        //}
-
-        [TestMethod]
-        public void FootballPlayerPropTest()
+        [ClassInitialize]
+        public static void Setup(TestContext context)
         {
-            // Arrange
-            var footballPlayerNoFail = new FootballPlayer(1, "Johan H. Rauer", 23, 99);
-            var footballPlayerShirtFailHigh = new FootballPlayer(2, "Johan H. Rauer", 23, 999);
-            var footballPlayerShirtFailLow = new FootballPlayer(3, "Johan H. Rauer", 23, 0);
-            var footballPlayerAgeFail = new FootballPlayer(4, "Johan H. Rauer", 0, 99);
-            var footballPlayerNameFail = new FootballPlayer(5, "J", 23, 99);
 
+        }
+
+        private FootballPlayer footballPlayerNoFail = new FootballPlayer(1, "Johan H. Rauer", 23, 99);
+        private FootballPlayer footballPlayerIdFail = new FootballPlayer(-1, "Johan H. Rauer", 23, 99);
+        private FootballPlayer footballPlayerShirtFailHigh = new FootballPlayer(2, "Johan H. Rauer", 23, 999);
+        private FootballPlayer footballPlayerShirtFailLow = new FootballPlayer(3, "Johan H. Rauer", 23, 0);
+        private FootballPlayer footballPlayerAgeFail = new FootballPlayer(4, "Johan H. Rauer", 0, 99);
+        private FootballPlayer footballPlayerNameFail = new FootballPlayer(5, "J", 23, 99);
+
+
+        [TestMethod()]
+        public void ToStringTest()
+        {
             // Act
-            var validationResults = new List<ValidationResult>();
-            var footballPlayerNoFailActual = Validator.TryValidateObject(footballPlayerNoFail, new ValidationContext(footballPlayerNoFail), validationResults, true);
-            var footballPlayerShirtFailHighActual = Validator.TryValidateObject(footballPlayerShirtFailHigh, new ValidationContext(footballPlayerShirtFailHigh), validationResults, true);
-            var footballPlayerShirtFailLowActual = Validator.TryValidateObject(footballPlayerShirtFailLow, new ValidationContext(footballPlayerShirtFailLow), validationResults, true);
-            var footballPlayerAgeFailActual = Validator.TryValidateObject(footballPlayerAgeFail, new ValidationContext(footballPlayerAgeFail), validationResults, true);
-            var footballPlayerNameFailActual = Validator.TryValidateObject(footballPlayerNameFail, new ValidationContext(footballPlayerNameFail), validationResults, true);
+            string str = footballPlayerNoFail.ToString();
 
             // Assert
-            Assert.IsTrue(footballPlayerNoFailActual, "Error: No Fail validation failed");
-            Assert.IsFalse(footballPlayerShirtFailHighActual, "Error: ShirtNumber Validation does not work");
-            Assert.IsFalse(footballPlayerShirtFailLowActual, "Error: ShirtNumber Validation does not work");
-            Assert.IsFalse(footballPlayerAgeFailActual, "Error: Age Validation does not work");
-            Assert.IsFalse(footballPlayerNameFailActual, "Error: Name Validation does not work");
+            Assert.AreEqual("1 Johan H. Rauer 23 99", str);  
+        }
 
+        [TestMethod]
+        public void StandardPropertyTest()
+        {
+            try
+            {
+                // Act
+                footballPlayerNoFail.Validate();
+            }
+            catch (Exception ex)
+            {
+                // Assert
+                Assert.Fail("Expected no exception, but got: " + ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void ValidateIdTest()
+        {
+            // Assert
+            Assert.ThrowsException<IllegalIdException>(() => footballPlayerIdFail.ValidateId());
+        }
+
+        [TestMethod]
+        public void ValidateNameTest()
+        {
+            // Assert
+            Assert.ThrowsException<IllegalNameException>(() => footballPlayerNameFail.ValidateName());
+        }
+
+        [TestMethod]
+        public void ValidateAgeTest()
+        {
+            // Assert
+            Assert.ThrowsException<IllegalAgeException>(() => footballPlayerAgeFail.ValidateAge());
+        }
+
+        [TestMethod]
+        public void ValidateShirtNumberHighTest()
+        {
+            // Assert
+            Assert.ThrowsException<IllegalShirtNumberException>(() => footballPlayerShirtFailHigh.ValidateShirtNumber());
+        }
+
+        [TestMethod]
+        public void ValidateShirtNumberLowTest()
+        {
+            // Assert
+            Assert.ThrowsException<IllegalShirtNumberException>(() => footballPlayerShirtFailLow.ValidateShirtNumber());
         }
     }
 }
